@@ -50,6 +50,14 @@ export default async function AuthenticatedLayout({
               >
                 Playground
               </Link>
+              <Link
+                href={
+                  isTeacher ? "/docs/giao-vien" : "/docs/hoc-sinh"
+                }
+                className="rounded-md px-3 py-1.5 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                Hướng dẫn
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">

@@ -19,6 +19,12 @@ export default async function Home() {
           </Link>
           <nav className="flex items-center gap-3">
             <Link
+              href="/docs"
+              className="text-sm font-medium text-zinc-700 hover:text-indigo-600 dark:text-zinc-300"
+            >
+              Hướng dẫn
+            </Link>
+            <Link
               href="/playground"
               className="text-sm font-medium text-zinc-700 hover:text-indigo-600 dark:text-zinc-300"
             >
