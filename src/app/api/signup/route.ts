@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 
 const signupSchema = z.object({
-  email: z.string().email("Email không hợp lệ"),
+  email: z.email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu cần ít nhất 6 ký tự"),
   fullName: z.string().min(2, "Họ tên cần ít nhất 2 ký tự"),
   role: z.enum(["teacher", "student"]),

@@ -53,9 +53,13 @@ export default async function AuthenticatedLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-zinc-600 dark:text-zinc-400">
+            <Link
+              href="/profile"
+              className="text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400"
+              title="Chỉnh sửa thông tin tài khoản"
+            >
               {user.name} · {isTeacher ? "Giáo viên" : "Học sinh"}
-            </span>
+            </Link>
             <ThemeToggle />
             <form
               action={async () => {
