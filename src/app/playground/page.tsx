@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CodeEditor } from "@/components/code-editor";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getPyodide } from "@/lib/pyodide/runner";
 
 const STARTER = `# Chào mừng bạn đến với PyKids!
@@ -74,6 +75,7 @@ export default function PlaygroundPage() {
             >
               {ready ? "● Python sẵn sàng" : loadingMsg || "● Đang tải..."}
             </span>
+            <ThemeToggle />
           </div>
         </div>
       </header>

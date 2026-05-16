@@ -10,6 +10,8 @@ import {
 } from "@/lib/db/schema";
 import { requireTeacher } from "@/lib/auth-helpers";
 import { deleteClass, removeStudent } from "@/lib/actions/classes";
+import { seedCurriculum } from "@/lib/actions/curriculum";
+import { CURRICULUM_EXERCISES } from "@/lib/curriculum/exercises";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -89,15 +91,32 @@ export default async function ClassDetailPage({
             </CardHeader>
             <CardContent className="p-0">
               {classExercises.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 py-12 text-center text-sm text-zinc-500">
+                <div className="flex flex-col items-center gap-3 py-12 text-center text-sm text-zinc-500">
                   <span className="text-4xl">📝</span>
                   <p>Chưa có bài tập nào</p>
-                  <Link
-                    href={`/teacher/classes/${cls.id}/exercises/new`}
-                    className="text-indigo-600 hover:underline"
-                  >
-                    Tạo bài đầu tiên
-                  </Link>
+                  <div className="flex flex-col items-center gap-2 sm:flex-row">
+                    <Link
+                      href={`/teacher/classes/${cls.id}/exercises/new`}
+                    >
+                      <Button variant="outline" size="sm">
+                        Tạo bài đầu tiên
+                      </Button>
+                    </Link>
+                    <span className="text-xs text-zinc-400">hoặc</span>
+                    <form action={seedCurriculum}>
+                      <input
+                        type="hidden"
+                        name="classId"
+                        value={cls.id}
+                      />
+                      <Button type="submit" size="sm">
+                        📚 Tải bộ bài mẫu ({CURRICULUM_EXERCISES.length} bài)
+                      </Button>
+                    </form>
+                  </div>
+                  <p className="mt-1 max-w-md text-xs text-zinc-400">
+                    Bộ bài mẫu theo giáo trình Python 24 buổi cho cấp 2 — từ Hello World tới hàm, OOP cơ bản.
+                  </p>
                 </div>
               ) : (
                 <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">

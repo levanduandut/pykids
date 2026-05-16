@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth-helpers";
 import { signOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function AuthenticatedLayout({
   children,
@@ -55,6 +56,7 @@ export default async function AuthenticatedLayout({
             <span className="text-zinc-600 dark:text-zinc-400">
               {user.name} · {isTeacher ? "Giáo viên" : "Học sinh"}
             </span>
+            <ThemeToggle />
             <form
               action={async () => {
                 "use server";

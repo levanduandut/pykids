@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (session?.user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -16,6 +24,7 @@ export default function Home() {
             >
               Thử ngay
             </Link>
+            <ThemeToggle />
             <Link href="/login">
               <Button variant="ghost" size="sm">
                 Đăng nhập
@@ -70,7 +79,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-zinc-200 py-6 text-center text-sm text-zinc-500 dark:border-zinc-800">
-        Vibe coded với ❤️ — chạy Python bằng Pyodide trong trình duyệt
+        Tạo bởi Nguyễn Mạnh Hùng
       </footer>
     </div>
   );
