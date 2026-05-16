@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   classes,
@@ -43,7 +43,7 @@ export default async function StudentClassDetailPage({
     .select()
     .from(exercises)
     .where(eq(exercises.classId, id))
-    .orderBy(desc(exercises.createdAt));
+    .orderBy(asc(exercises.createdAt));
 
   const exerciseIds = classExercises.map((e) => e.id);
 

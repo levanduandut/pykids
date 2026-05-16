@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { and, eq, desc } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   classes,
@@ -34,7 +34,7 @@ export default async function ClassDetailPage({
       .select()
       .from(exercises)
       .where(eq(exercises.classId, id))
-      .orderBy(desc(exercises.createdAt)),
+      .orderBy(asc(exercises.createdAt)),
     db
       .select({
         id: users.id,
