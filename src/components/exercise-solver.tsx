@@ -68,10 +68,12 @@ export function ExerciseSolver({
 
   const [pyReady, setPyReady] = useState(false);
   const warmedUp = useRef(false);
+  const startedAt = useRef<number>(Date.now());
 
   useEffect(() => {
     if (warmedUp.current) return;
     warmedUp.current = true;
+    startedAt.current = Date.now();
     getPyodide()
       .warmup()
       .then(() => setPyReady(true))
@@ -113,9 +115,15 @@ export function ExerciseSolver({
       }));
       setResults(annotated);
 
+      const durationSeconds = Math.min(
+        7200,
+        Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)),
+      );
+
       const submitPayload = {
         exerciseId,
         code,
+        durationSeconds,
         results: annotated.map((r) => ({
           testCaseId: r.testCaseId,
           passed: r.passed,
@@ -162,7 +170,7 @@ export function ExerciseSolver({
           <h1 className={`font-bold ${isCap1 ? "text-4xl" : "text-3xl"}`}>
             {title}
           </h1>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             <span
               className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                 isCap1
@@ -183,6 +191,12 @@ export function ExerciseSolver({
                 Điểm cao nhất: {bestScore}/100
               </span>
             )}
+            <Link
+              href={`/student/exercises/${exerciseId}/history`}
+              className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+            >
+              📜 Lịch sử nộp
+            </Link>
             <span
               className={
                 pyReady ? "text-emerald-600" : "text-zinc-400"

@@ -93,6 +93,7 @@ export const submissions = pgTable("submissions", {
   passedCount: integer("passed_count").notNull(),
   totalCount: integer("total_count").notNull(),
   results: jsonb("results").notNull(),
+  durationSeconds: integer("duration_seconds").default(0).notNull(),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
 

@@ -10,6 +10,7 @@ import {
 } from "@/lib/db/schema";
 import { requireTeacher } from "@/lib/auth-helpers";
 import { deleteClass, removeStudent } from "@/lib/actions/classes";
+import { deleteAllSubmissionsForStudent } from "@/lib/actions/submissions";
 import { seedCurriculum } from "@/lib/actions/curriculum";
 import { CURRICULUM_EXERCISES } from "@/lib/curriculum/exercises";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,10 @@ export default async function ClassDetailPage({
             </span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/teacher/classes/${cls.id}/leaderboard`}>
+            <Button variant="outline">🏆 Xếp hạng</Button>
+          </Link>
           <Link href={`/teacher/classes/${cls.id}/progress`}>
             <Button variant="outline">📊 Tiến độ</Button>
           </Link>
@@ -121,25 +125,39 @@ export default async function ClassDetailPage({
               ) : (
                 <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
                   {classExercises.map((ex) => (
-                    <li key={ex.id}>
+                    <li
+                      key={ex.id}
+                      className="flex items-center justify-between gap-3 px-6 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    >
                       <Link
                         href={`/teacher/exercises/${ex.id}/edit`}
-                        className="flex items-center justify-between gap-3 px-6 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                        className="flex flex-1 items-center gap-3"
                       >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                              ex.difficulty === "cap1"
-                                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                            }`}
-                          >
-                            {ex.difficulty === "cap1" ? "Cấp 1" : "Cấp 2"}
-                          </span>
-                          <span className="font-medium">{ex.title}</span>
-                        </div>
-                        <span className="text-xs text-zinc-400">Sửa →</span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                            ex.difficulty === "cap1"
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                          }`}
+                        >
+                          {ex.difficulty === "cap1" ? "Cấp 1" : "Cấp 2"}
+                        </span>
+                        <span className="font-medium">{ex.title}</span>
                       </Link>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Link
+                          href={`/teacher/exercises/${ex.id}/submissions`}
+                          className="rounded px-2 py-1 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950"
+                        >
+                          Lịch sử nộp
+                        </Link>
+                        <Link
+                          href={`/teacher/exercises/${ex.id}/edit`}
+                          className="text-zinc-400"
+                        >
+                          Sửa →
+                        </Link>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -165,7 +183,7 @@ export default async function ClassDetailPage({
                   {studentRows.map((s) => (
                     <li
                       key={s.id}
-                      className="flex items-center justify-between px-6 py-3"
+                      className="flex items-center justify-between gap-2 px-6 py-3"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
@@ -175,26 +193,49 @@ export default async function ClassDetailPage({
                           {s.email}
                         </p>
                       </div>
-                      <form action={removeStudent}>
-                        <input
-                          type="hidden"
-                          name="classId"
-                          value={cls.id}
-                        />
-                        <input
-                          type="hidden"
-                          name="studentId"
-                          value={s.id}
-                        />
-                        <Button
-                          type="submit"
-                          size="sm"
-                          variant="ghost"
-                          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950"
-                        >
-                          Xóa
-                        </Button>
-                      </form>
+                      <div className="flex items-center gap-1">
+                        <form action={deleteAllSubmissionsForStudent}>
+                          <input
+                            type="hidden"
+                            name="classId"
+                            value={cls.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="studentId"
+                            value={s.id}
+                          />
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="ghost"
+                            className="text-xs text-amber-600 hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950"
+                            title="Xóa toàn bộ lịch sử nộp bài của học sinh này trong lớp"
+                          >
+                            Xóa lịch sử
+                          </Button>
+                        </form>
+                        <form action={removeStudent}>
+                          <input
+                            type="hidden"
+                            name="classId"
+                            value={cls.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="studentId"
+                            value={s.id}
+                          />
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="ghost"
+                            className="text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950"
+                          >
+                            Rời lớp
+                          </Button>
+                        </form>
+                      </div>
                     </li>
                   ))}
                 </ul>

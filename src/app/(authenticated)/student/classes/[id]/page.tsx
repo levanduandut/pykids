@@ -92,12 +92,19 @@ export default async function StudentClassDetailPage({
               Giáo viên: {teacher?.fullName ?? "—"} · Lớp {cls.gradeLevel}
             </p>
           </div>
-          <form action={leaveClass}>
-            <input type="hidden" name="classId" value={cls.id} />
-            <Button type="submit" variant="ghost" size="sm">
-              Rời lớp
-            </Button>
-          </form>
+          <div className="flex items-center gap-2">
+            <Link href={`/student/classes/${cls.id}/leaderboard`}>
+              <Button variant="outline" size="sm">
+                🏆 Xếp hạng
+              </Button>
+            </Link>
+            <form action={leaveClass}>
+              <input type="hidden" name="classId" value={cls.id} />
+              <Button type="submit" variant="ghost" size="sm">
+                Rời lớp
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
 

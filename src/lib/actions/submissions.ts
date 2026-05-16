@@ -6,11 +6,12 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import {
   classMembers,
+  classes,
   exercises,
   submissions,
   testCases,
 } from "@/lib/db/schema";
-import { requireStudent } from "@/lib/auth-helpers";
+import { requireStudent, requireTeacher } from "@/lib/auth-helpers";
 
 const resultSchema = z.object({
   testCaseId: z.string().uuid(),
@@ -26,6 +27,7 @@ const submitSchema = z.object({
   exerciseId: z.string().uuid(),
   code: z.string(),
   results: z.array(resultSchema),
+  durationSeconds: z.number().int().min(0).max(7200),
 });
 
 export type SubmitPayload = z.infer<typeof submitSchema>;
@@ -87,11 +89,72 @@ export async function submitExercise(
       passedCount,
       totalCount: tests.length,
       results: parsed.data.results,
+      durationSeconds: parsed.data.durationSeconds,
     })
     .returning({ id: submissions.id });
 
   revalidatePath(`/student/classes/${ex.classId}`);
   revalidatePath(`/student/exercises/${ex.id}`);
+  revalidatePath(`/student/exercises/${ex.id}/history`);
   revalidatePath(`/teacher/classes/${ex.classId}/progress`);
+  revalidatePath(`/teacher/classes/${ex.classId}/leaderboard`);
   return { ok: true, submissionId: created.id };
+}
+
+export async function deleteSubmission(formData: FormData) {
+  const user = await requireTeacher();
+  const submissionId = String(formData.get("submissionId") ?? "");
+  if (!submissionId) return;
+
+  const sub = await db.query.submissions.findFirst({
+    where: eq(submissions.id, submissionId),
+  });
+  if (!sub) return;
+
+  const ex = await db.query.exercises.findFirst({
+    where: eq(exercises.id, sub.exerciseId),
+  });
+  if (!ex) return;
+
+  const cls = await db.query.classes.findFirst({
+    where: and(eq(classes.id, ex.classId), eq(classes.teacherId, user.id)),
+  });
+  if (!cls) return;
+
+  await db.delete(submissions).where(eq(submissions.id, submissionId));
+
+  revalidatePath(`/teacher/exercises/${ex.id}/submissions`);
+  revalidatePath(`/teacher/classes/${ex.classId}/progress`);
+  revalidatePath(`/teacher/classes/${ex.classId}/leaderboard`);
+}
+
+export async function deleteAllSubmissionsForStudent(formData: FormData) {
+  const user = await requireTeacher();
+  const classId = String(formData.get("classId") ?? "");
+  const studentId = String(formData.get("studentId") ?? "");
+  if (!classId || !studentId) return;
+
+  const cls = await db.query.classes.findFirst({
+    where: and(eq(classes.id, classId), eq(classes.teacherId, user.id)),
+  });
+  if (!cls) return;
+
+  const classExercises = await db
+    .select({ id: exercises.id })
+    .from(exercises)
+    .where(eq(exercises.classId, classId));
+
+  for (const ex of classExercises) {
+    await db
+      .delete(submissions)
+      .where(
+        and(
+          eq(submissions.exerciseId, ex.id),
+          eq(submissions.studentId, studentId),
+        ),
+      );
+  }
+
+  revalidatePath(`/teacher/classes/${classId}/progress`);
+  revalidatePath(`/teacher/classes/${classId}/leaderboard`);
 }

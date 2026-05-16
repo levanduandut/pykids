@@ -58,19 +58,26 @@ export default async function EditExercisePage({
       />
 
       <Card>
-        <CardContent className="flex items-center justify-between gap-3 p-6">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-6">
           <div>
-            <p className="text-sm font-medium">Xóa bài tập này</p>
+            <p className="text-sm font-medium">Quản lý bài tập</p>
             <p className="text-xs text-zinc-500">
-              Tất cả test cases và lịch sử nộp bài sẽ bị xóa.
+              Xem các lần học sinh nộp bài, hoặc xóa hẳn bài tập.
             </p>
           </div>
-          <form action={deleteExercise}>
-            <input type="hidden" name="exerciseId" value={ex.id} />
-            <Button type="submit" variant="danger" size="sm">
-              Xóa bài tập
-            </Button>
-          </form>
+          <div className="flex gap-2">
+            <Link href={`/teacher/exercises/${ex.id}/submissions`}>
+              <Button variant="outline" size="sm">
+                📜 Xem lịch sử nộp
+              </Button>
+            </Link>
+            <form action={deleteExercise}>
+              <input type="hidden" name="exerciseId" value={ex.id} />
+              <Button type="submit" variant="danger" size="sm">
+                Xóa bài tập
+              </Button>
+            </form>
+          </div>
         </CardContent>
       </Card>
 
