@@ -24,6 +24,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gradeLevel, setGradeLevel] = useState<number>(5);
+  const [teacherCode, setTeacherCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +42,7 @@ export default function SignupPage() {
         password,
         role,
         gradeLevel: role === "student" ? gradeLevel : undefined,
+        teacherCode: role === "teacher" ? teacherCode : undefined,
       }),
     });
 
@@ -153,6 +155,26 @@ export default function SignupPage() {
                   </option>
                 ))}
               </select>
+            </div>
+          )}
+
+          {role === "teacher" && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="teacherCode">Mã giáo viên</Label>
+              <Input
+                id="teacherCode"
+                type="text"
+                inputMode="numeric"
+                required
+                placeholder="Nhập mã xác nhận"
+                value={teacherCode}
+                onChange={(e) => setTeacherCode(e.target.value)}
+                autoComplete="off"
+              />
+              <p className="text-xs text-zinc-500">
+                Mã do quản trị viên cung cấp để hạn chế tài khoản giáo viên tự
+                tạo.
+              </p>
             </div>
           )}
 

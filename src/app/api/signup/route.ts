@@ -11,7 +11,10 @@ const signupSchema = z.object({
   fullName: z.string().min(2, "Họ tên cần ít nhất 2 ký tự"),
   role: z.enum(["teacher", "student"]),
   gradeLevel: z.number().int().min(1).max(9).optional(),
+  teacherCode: z.string().optional(),
 });
+
+const TEACHER_SIGNUP_CODE = process.env.TEACHER_SIGNUP_CODE ?? "3001";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -24,7 +27,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const { email, password, fullName, role, gradeLevel } = parsed.data;
+  const { email, password, fullName, role, gradeLevel, teacherCode } =
+    parsed.data;
+
+  if (role === "teacher" && teacherCode !== TEACHER_SIGNUP_CODE) {
+    return NextResponse.json(
+      { error: "Mã giáo viên không đúng" },
+      { status: 403 },
+    );
+  }
 
   const existing = await db.query.users.findFirst({
     where: eq(users.email, email),
